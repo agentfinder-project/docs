@@ -8,13 +8,13 @@ This was designed and reviewed by a core team of agent builders at:
 - Google
 - HuggingFace
 - Microsoft
+- Amazon
 
 All of you are building agents, tools, skills, and more. We encourage you to add support for AI Catalog and Agent Finder—see our [How to publish](how_to_publish.md) guide.
 
 ## Contributors & Endorsers
 
 - Anthropic (pending confirmation)
-- AWS (pending confirmation)
 - Cisco (pending confirmation)
 - Nvidia (pending confirmation)
 - SAP (pending confirmation)
