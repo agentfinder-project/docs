@@ -1,118 +1,110 @@
 # Developer Documentation
 
-Welcome to the Agent Finder documentation codebase. This guide outlines how to get started, run the development server locally, and publish documentation updates.
+Welcome to the [Agent Finder](https://agentfinder-project.github.io/docs/) documentation repository. This guide covers local setup, the repository layout, deployment, and writing style.
+
+> **Note:** This file is for contributors only. MkDocs excludes it from the published site because `index.md` is the public homepage.
 
 ---
 
-## 1. Getting Started
+## Repository layout
 
-To develop the docs, you need Python 3.x and a Git client.
+| Path | Purpose |
+| :--- | :--- |
+| `mkdocs.yml` | Site configuration, navigation, and theme |
+| `docs/` | Published Markdown pages (MkDocs `docs_dir`) |
+| `spec/agentfinder.md` | Canonical Agent Finder specification (included on the site via snippet) |
+| `overrides/` | Material theme customizations |
+| `.github/workflows/publish-docs.yaml` | Automated deploy to GitHub Pages on push to `main` |
 
-1.  **Clone the Repository**:
-    ```bash
-    git clone <repo_url>
-    cd agent-finder
-    ```
-
-2.  **Create a Virtual Environment**:
-    We use a local Python virtual environment to isolate documentation dependencies.
-    ```bash
-    python3 -m venv .venv
-    ```
-
-3.  **Activate the Virtual Environment** (Optional):
-    *   On Linux/macOS: `source .venv/bin/activate`
-    *   On Windows: `.venv\Scripts\activate`
-
-4.  **Install Dependencies**:
-    Install the required documentation packages (such as `mkdocs` and the `mkdocs-material` theme):
-    ```bash
-    .venv/bin/pip install -r requirements-docs.txt
-    ```
+The live site is published at **https://agentfinder-project.github.io/docs/**.
 
 ---
 
-## 2. Local Development
+## 1. Getting started
 
-We use a live-reloading development server to preview modifications instantly in the browser.
+You need Python 3.x and Git.
 
-Start the local server:
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/agentfinder-project/docs.git
+   cd docs
+   ```
+
+2. **Create a virtual environment**:
+   ```bash
+   python3 -m venv .venv
+   ```
+
+3. **Activate the virtual environment** (optional):
+   - Linux/macOS: `source .venv/bin/activate`
+   - Windows: `.venv\Scripts\activate`
+
+4. **Install dependencies**:
+   ```bash
+   .venv/bin/pip install -r requirements-docs.txt
+   ```
+
+---
+
+## 2. Local development
+
+Start the live-reload preview server from the repository root:
+
 ```bash
 .venv/bin/mkdocs serve
 ```
 
-*   Once running, open **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)** in your browser.
-*   Any change made to markdown files inside the `docs/` directory will trigger an automatic rebuild and refresh your browser tab.
+- Open **http://127.0.0.1:8000/** in your browser.
+- Edits under `docs/` rebuild automatically.
+- Edits to `spec/agentfinder.md` also appear on the **Agent Finder Spec** page (`docs/spec.md` pulls that file in via a snippet).
+
+To verify a production build locally:
+
+```bash
+.venv/bin/mkdocs build
+```
 
 ---
 
 ## 3. Deployment
 
-### Manual Deployment (Current)
+### Automated deployment (default)
 
-If you have push permissions to the main repository, you can build and deploy the live site directly using:
+Pushing or merging to `main` triggers the **Publish Docs** workflow (`.github/workflows/publish-docs.yaml`), which builds the site and deploys to the `gh-pages` branch on GitHub Pages.
+
+No manual steps are required for routine doc updates merged to `main`.
+
+### Manual deployment (optional)
+
+If you have push access and need to deploy outside CI (for example, to test `gh-deploy` locally):
 
 ```bash
 .venv/bin/mkdocs gh-deploy
 ```
 
-This command builds the static assets, commits them to a local `gh-pages` branch, and pushes it to GitHub.
+This builds static assets, commits them to `gh-pages`, and pushes to GitHub.
 
 ---
 
-### Automated Deployment (Planned GitHub Action)
+## 4. Editing the specification
 
-We are transitioning deployment to an automated CI/CD pipeline using **GitHub Actions** (modeled directly on the `adk-docs` pipeline). Once active, pushing or merging to the `main` branch will automatically trigger a build and deploy.
-
-To activate this automation, create a file at `.github/workflows/publish-docs.yaml` with this optimized definition:
-
-```yaml
-name: Publish Docs
-
-on:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: write
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      
-      - name: Configure Git Credentials
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          
-      - uses: actions/setup-python@v6
-        with:
-          python-version: 3.x
-          
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      
-      - name: Cache Material Theme Assets
-        uses: actions/cache@v5
-        with:
-          key: mkdocs-material-${{ env.cache_id }}
-          path: .cache
-          restore-keys: |
-            mkdocs-material-
-            
-      - name: Install Dependencies
-        run: pip install -r requirements-docs.txt
-        
-      - name: Deploy to GitHub Pages
-        run: mkdocs gh-deploy --force
-```
+The full Agent Finder spec lives in **`spec/agentfinder.md`**. The site page `docs/spec.md` includes it with a snippet directive—edit the spec file directly rather than duplicating content in `docs/spec.md`.
 
 ---
 
-## 4. Writing Guidelines & Style
-When authoring or updating documentation, we strictly adhere to an **anti-hype, high-density, clinical tone**:
-*   **Clear and Concise**: Explain the technical parameters directly. Never use marketing superlatives (*"revolutionary"*, *"groundbreaking"*).
-*   **Grounded Examples**: Always use valid code blocks with domain-anchored URNs and standard media types (`application/mcp-server+json`).
-*   Refer to the `.scratchpad/style_guide_and_spec_alignment.md` handbook for specific phrase mappings and theme visual design guidelines.
+## 5. Writing guidelines
+
+Use an **anti-hype, high-density, clinical tone**:
+
+- **Clear and concise:** State technical behavior directly. Avoid marketing superlatives (*"revolutionary"*, *"groundbreaking"*).
+- **Grounded examples:** Use valid JSON with domain-anchored URNs (`urn:ai:<domain>:...`) and standard media types (for example `application/mcp-server+json`).
+- **Spec alignment:** Terminology and schema examples should match `spec/agentfinder.md` and the [ai-catalog](https://github.com/Agent-Card/ai-catalog) standard.
+
+---
+
+## 6. Contributing
+
+- **Spec and product discussion:** [agentfinder-project/agentfinder issues](https://github.com/agentfinder-project/agentfinder/issues)
+- **Documentation changes:** Open a PR in this repository (`agentfinder-project/docs`). Public write access may be limited; ask in issues or [Discord](https://discord.gg/PK3DpEybzP) if you need collaborator access.
+
+See also [Contributors](contributors.md) on the published site.
