@@ -4,7 +4,7 @@
 
 This was designed and reviewed by a core team of agent builders at:
 
-- AWS
+- Amazon
 - Cisco
 - GoDaddy
 - Google
